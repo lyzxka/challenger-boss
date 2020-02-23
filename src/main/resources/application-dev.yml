@@ -1,0 +1,49 @@
+﻿#开发环境配置
+spring:
+  profiles: dev
+  #redis配置
+  redis:
+      database: 15
+      host: 127.0.0.1
+      port: 6379
+      password:      # 密码（默认为空）
+      timeout: 6000  # 连接超时时长（毫秒）
+      pool:
+        max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接
+  # 数据源配置
+  datasource:
+    url: jdbc:mysql://39.105.34.103:3306/challenger?useUnicode=true&characterEncoding=utf8&useSSL=false&tinyInt1isBit=true
+    username: challenger
+    password: asjildjoiasudon
+
+#日志
+logging:
+  config: classpath:log/logback.xml
+  path: D://log//
+
+#自定义配置属性
+#源码生成文件夹
+source-code-dic:  D://mysite
+source-code-zipfile:  D://源码.rar
+
+#搜索文件生成包的位置
+#本地路径
+lucence-dic: D://lucence
+#七牛上传路径
+qiniu:
+  path: http://img.zzxka.com/
+  qiniuAccess: kOuqZv-U2vzgOyWesZ4GXxTC8sLNByOMkYUOEq74
+  qiniuKey: CYPZEbU7Crwk7A9aSpmvGzqy0NFluXtLLSiFDq7b
+  bucketName: zzxka
+
+#腾讯云短信验证码
+sms:
+  appid: 1
+  appkey: 1
+  sign: 1
+  on-off: false
+
+
