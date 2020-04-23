@@ -1,5 +1,10 @@
 package com.rancii.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.rancii.entity.ChCategory;
+import com.rancii.entity.VO.GroupSearchVO;
+import com.rancii.service.ChCategoryService;
+import com.rancii.service.ChGroupService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,54 +48,29 @@ public class ChGroupSearchController {
 
     @Autowired
     private ChGroupSearchService chGroupSearchService;
+    @Autowired
+    private ChGroupService groupService;
+    @Autowired
+    private ChCategoryService categoryService;
+
 
     @GetMapping("list")
     @SysLog("跳转组队请求列表")
-    public String list(){
+    public String list(Model model){
+        List<ChCategory> list=categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false));
+        model.addAttribute("categoryList",list);
         return "/chGroupSearch/list";
     }
 
     @PostMapping("list")
     @ResponseBody
     @SysLog("请求组队请求列表数据")
-    public LayerData<ChGroupSearch> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
+    public LayerData<GroupSearchVO> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
                                       @RequestParam(value = "limit",defaultValue = "10")Integer limit,
                                       ServletRequest request){
         Map map = WebUtils.getParametersStartingWith(request, "s_");
-        LayerData<ChGroupSearch> layerData = new LayerData<>();
-        QueryWrapper<ChGroupSearch> wrapper = new QueryWrapper<>();
-        wrapper.eq("del_flag",false);
-        if(!map.isEmpty()){
-            String groupId = (String) map.get("groupId");
-            if(StringUtils.isNotBlank(groupId)) {
-                wrapper.like("group_id",groupId);
-            }else{
-                map.remove("groupId");
-            }
-
-            String title = (String) map.get("title");
-            if(StringUtils.isNotBlank(title)) {
-                wrapper.like("title",title);
-            }else{
-                map.remove("title");
-            }
-
-            String matchId = (String) map.get("matchId");
-            if(StringUtils.isNotBlank(matchId)) {
-                wrapper.like("match_id",matchId);
-            }else{
-                map.remove("matchId");
-            }
-
-            String categoryId = (String) map.get("categoryId");
-            if(StringUtils.isNotBlank(categoryId)) {
-                wrapper.like("category_id",categoryId);
-            }else{
-                map.remove("categoryId");
-            }
-
-        }
-        IPage<ChGroupSearch> pageData = chGroupSearchService.page(new Page<>(page,limit),wrapper);
+        LayerData<GroupSearchVO> layerData = new LayerData<>();
+        IPage<GroupSearchVO> pageData = chGroupSearchService.selectGroupSearchForPage(map,new Page<>(page,limit));
         layerData.setData(pageData.getRecords());
         layerData.setCount((int)pageData.getTotal());
         return layerData;
@@ -99,6 +79,7 @@ public class ChGroupSearchController {
     @GetMapping("add")
     @SysLog("跳转新增组队请求页面")
     public String add(){
+
         return "/chGroupSearch/add";
     }
 

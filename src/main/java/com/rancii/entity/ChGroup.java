@@ -1,5 +1,6 @@
 package com.rancii.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.rancii.base.DataEntity;
 
@@ -11,6 +12,7 @@ import com.rancii.base.DataEntity;
  * @author hantw
  * @since 2020-02-23
  */
+@TableName("ch_group")
 public class ChGroup extends DataEntity<ChGroup> {
 
     private static final long serialVersionUID = 1L;

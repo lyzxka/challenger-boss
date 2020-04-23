@@ -1,5 +1,6 @@
 package com.rancii.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.rancii.base.DataEntity;
 
@@ -11,6 +12,7 @@ import com.rancii.base.DataEntity;
  * @author hantw
  * @since 2020-02-23
  */
+@TableName("ch_group_search")
 public class ChGroupSearch extends DataEntity<ChGroupSearch> {
 
     private static final long serialVersionUID = 1L;
@@ -18,7 +20,7 @@ public class ChGroupSearch extends DataEntity<ChGroupSearch> {
     /**
      * 队伍
      */
-	private Long groupId;
+	private String groupNo;
     /**
      * 标题
      */
@@ -40,13 +42,14 @@ public class ChGroupSearch extends DataEntity<ChGroupSearch> {
      */
 	private Long categoryId;
 
-	public Long getGroupId() {
-		return groupId;
+	public String getGroupNo() {
+		return groupNo;
 	}
 
-	public void setGroupId(Long groupId) {
-		this.groupId = groupId;
+	public void setGroupNo(String groupNo) {
+		this.groupNo = groupNo;
 	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -87,7 +90,7 @@ public class ChGroupSearch extends DataEntity<ChGroupSearch> {
 	@Override
 	public String toString() {
 		return "ChGroupSearch{" +
-			", groupId=" + groupId +
+			", groupNo=" + groupNo +
 			", title=" + title +
 			", matchId=" + matchId +
 			", content=" + content +

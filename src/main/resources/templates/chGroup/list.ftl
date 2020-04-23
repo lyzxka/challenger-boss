@@ -22,7 +22,7 @@
   <legend>队伍检索</legend>
   <div class="layui-field-box">
     <form class="layui-form" id="searchForm">
-    <div class="layui-inline" style="margin-left: 15px">
+    <#--<div class="layui-inline" style="margin-left: 15px">
             <label>队伍编号:</label>
                 <div class="layui-input-inline">
                 <input type="text" value="" name="s_groupNo" placeholder="请输入队伍编号" class="layui-input search_input">
@@ -64,7 +64,7 @@
                 <div class="layui-input-inline">
                 <input type="text" value="" name="s_categoryId" placeholder="请输入类别" class="layui-input search_input">
                 </div>
-    </div>
+    </div>-->
     <div class="layui-inline" style="margin-left: 15px">
             <label>状态:</label>
                 <div class="layui-input-inline">
@@ -84,9 +84,9 @@
         <div class="layui-inline" >
             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
-        <div class="layui-inline">
+        <#--<div class="layui-inline">
             <a class="layui-btn layui-btn-normal" data-type="addChGroup">添加队伍</a>
-        </div>
+        </div>-->
     </form>
   </div>
 </fieldset>
@@ -120,8 +120,13 @@
     </script>
 
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <#--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+
+        {{#  if(d.status == '1'){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="auditYes">通过</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="auditNo">拒绝</a>
+        {{#  } }}
     </script>
 </div>
 <div id="page"></div>
@@ -174,6 +179,38 @@
                         }
                 )
             }
+            if(obj.event === "auditYes"){
+                layer.confirm("你确定同意该用户请求么？",{btn:['是的,我确定','我再想想']},
+                    function(){
+                        $.post("${base}/chGroup/audit",{"id":data.id,"status":"2"},function (res){
+                            if(res.success){
+                                layer.msg("同意成功",{time: 1000},function(){
+                                    location.reload();
+                                });
+                            }else{
+                                layer.msg(res.message);
+                            }
+
+                        });
+                    }
+                )
+            }
+            if(obj.event === "auditNo"){
+                layer.confirm("你确定要拒绝该用户请求么？",{btn:['是的,我确定','我再想想']},
+                    function(){
+                        $.post("${base}/chGroup/audit",{"id":data.id,"status":"2"},function (res){
+                            if(res.success){
+                                layer.msg("拒绝成功",{time: 1000},function(){
+                                    location.reload();
+                                });
+                            }else{
+                                layer.msg(res.message);
+                            }
+
+                        });
+                    }
+                )
+            }
         });
 
         var t = {
@@ -188,17 +225,19 @@
                 last: "尾页", //显示尾页
                 limits:[3,10, 20, 30]
             },
+            where: {'s_groupNo':'${groupNo}'},
             cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             cols: [[
                 {type:'checkbox'},
-                {field:'groupNo', title: '队伍编号'},
-                {field:'groupName', title: '队名'},
-                {field:'userId', title: '用户'},
-                {field:'userRole', title: '身份',templet:'#userRole'},
-                {field:'matchId', title: '比赛'},
-                {field:'categoryId', title: '类别'},
+                // {field:'groupNo', title: '队伍编号'},
+                // {field:'groupName', title: '队名'},
+                {field:'userName', title: '用户名称'},
+                {field:'userPhone', title: '用户手机号'},
+                // {field:'userRole', title: '身份',templet:'#userRole'},
+                // {field:'matchId', title: '比赛'},
+                // {field:'categoryId', title: '类别'},
                 {field:'status', title: '状态',templet:'#status'},
-                {field:'delFlag',    title: '队伍状态',width:'12%',templet:'#userStatus'},
+                // {field:'delFlag',    title: '队伍状态',width:'12%',templet:'#userStatus'},
                 {field:'createDate',  title: '创建时间',width:'15%',templet:'<div>{{ layui.laytpl.toDateString(d.createDate) }}</div>',unresize: true}, //单元格内容水平居中
                 {fixed: 'right', title:'操作',  width: '15%', align: 'center',toolbar: '#barDemo'}
             ]]

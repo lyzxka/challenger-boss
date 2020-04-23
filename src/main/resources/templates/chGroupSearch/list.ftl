@@ -23,27 +23,20 @@
   <div class="layui-field-box">
     <form class="layui-form" id="searchForm">
     <div class="layui-inline" style="margin-left: 15px">
-            <label>队伍:</label>
+            <label>比赛名称:</label>
                 <div class="layui-input-inline">
-                <input type="text" value="" name="s_groupId" placeholder="请输入队伍" class="layui-input search_input">
-                </div>
-    </div>
-    <div class="layui-inline" style="margin-left: 15px">
-            <label>标题:</label>
-                <div class="layui-input-inline">
-                <input type="text" value="" name="s_title" placeholder="请输入标题" class="layui-input search_input">
-                </div>
-    </div>
-    <div class="layui-inline" style="margin-left: 15px">
-            <label>比赛:</label>
-                <div class="layui-input-inline">
-                <input type="text" value="" name="s_matchId" placeholder="请输入比赛" class="layui-input search_input">
+                <input type="text" value="" name="s_matchName" placeholder="请输入比赛名称" class="layui-input search_input">
                 </div>
     </div>
     <div class="layui-inline" style="margin-left: 15px">
             <label>类别:</label>
                 <div class="layui-input-inline">
-                <input type="text" value="" name="s_categoryId" placeholder="请输入类别" class="layui-input search_input">
+                    <select name="s_categoryId">
+                        <option value="" selected="">请选择类别</option>
+                        <#list categoryList as r>
+                            <option value="${r.id}" >${r.categoryName}</option>
+                        </#list>
+                    </select>
                 </div>
     </div>
         <div class="layui-inline">
@@ -52,9 +45,9 @@
         <div class="layui-inline" >
             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
-        <div class="layui-inline">
+        <#--<div class="layui-inline">
             <a class="layui-btn layui-btn-normal" data-type="addChGroupSearch">添加组队请求</a>
-        </div>
+        </div>-->
     </form>
   </div>
 </fieldset>
@@ -70,8 +63,9 @@
     </script>
 
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+        <#--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
     </script>
 </div>
 <div id="page"></div>
@@ -124,6 +118,25 @@
                         }
                 )
             }
+            if(obj.event === 'detail'){
+                var editIndex = layer.open({
+                    title : "编辑组队请求",
+                    type : 2,
+                    content : "${base}/chGroup/list?groupNo="+data.groupNo,
+                    success : function(layero, index){
+                        setTimeout(function(){
+                            layer.tips('点击此处返回组队请求列表', '.layui-layer-setwin .layui-layer-close', {
+                                tips: 3
+                            });
+                        },500);
+                    }
+                });
+                //改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+                $(window).resize(function(){
+                    layer.full(editIndex);
+                });
+                layer.full(editIndex);
+            }
         });
 
         var t = {
@@ -141,13 +154,13 @@
             cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             cols: [[
                 {type:'checkbox'},
-                {field:'groupId', title: '队伍'},
-                {field:'title', title: '标题'},
-                {field:'matchId', title: '比赛'},
+                {field:'userName', title: '用户名称'},
+                {field:'userPhone', title: '用户手机号'},
+                {field:'matchName', title: '比赛名称'},
                 {field:'content', title: '详情'},
                 {field:'userNum', title: '成员人数'},
-                {field:'categoryId', title: '类别'},
-                {field:'delFlag',    title: '组队请求状态',width:'12%',templet:'#userStatus'},
+                {field:'categoryName', title: '类别'},
+                //{field:'delFlag',    title: '组队请求状态',width:'12%',templet:'#userStatus'},
                 {field:'createDate',  title: '创建时间',width:'15%',templet:'<div>{{ layui.laytpl.toDateString(d.createDate) }}</div>',unresize: true}, //单元格内容水平居中
                 {fixed: 'right', title:'操作',  width: '15%', align: 'center',toolbar: '#barDemo'}
             ]]

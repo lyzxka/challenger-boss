@@ -1,5 +1,6 @@
 package com.rancii.controller;
 
+import com.rancii.entity.VO.GroupVO;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,72 +47,20 @@ public class ChGroupController {
 
     @GetMapping("list")
     @SysLog("跳转队伍列表")
-    public String list(){
+    public String list(String groupNo,Model model){
+        model.addAttribute("groupNo",groupNo);
         return "/chGroup/list";
     }
 
     @PostMapping("list")
     @ResponseBody
     @SysLog("请求队伍列表数据")
-    public LayerData<ChGroup> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
+    public LayerData<GroupVO> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
                                       @RequestParam(value = "limit",defaultValue = "10")Integer limit,
                                       ServletRequest request){
         Map map = WebUtils.getParametersStartingWith(request, "s_");
-        LayerData<ChGroup> layerData = new LayerData<>();
-        QueryWrapper<ChGroup> wrapper = new QueryWrapper<>();
-        wrapper.eq("del_flag",false);
-        if(!map.isEmpty()){
-            String groupNo = (String) map.get("groupNo");
-            if(StringUtils.isNotBlank(groupNo)) {
-                wrapper.like("group_no",groupNo);
-            }else{
-                map.remove("groupNo");
-            }
-
-            String groupName = (String) map.get("groupName");
-            if(StringUtils.isNotBlank(groupName)) {
-                wrapper.like("group_name",groupName);
-            }else{
-                map.remove("groupName");
-            }
-
-            String userId = (String) map.get("userId");
-            if(StringUtils.isNotBlank(userId)) {
-                wrapper.like("user_id",userId);
-            }else{
-                map.remove("userId");
-            }
-
-            String userRole = (String) map.get("userRole");
-            if(StringUtils.isNotBlank(userRole)) {
-                wrapper.eq("user_role",userRole);
-            }else{
-                map.remove("userRole");
-            }
-
-            String matchId = (String) map.get("matchId");
-            if(StringUtils.isNotBlank(matchId)) {
-                wrapper.like("match_id",matchId);
-            }else{
-                map.remove("matchId");
-            }
-
-            String categoryId = (String) map.get("categoryId");
-            if(StringUtils.isNotBlank(categoryId)) {
-                wrapper.like("category_id",categoryId);
-            }else{
-                map.remove("categoryId");
-            }
-
-            String status = (String) map.get("status");
-            if(StringUtils.isNotBlank(status)) {
-                wrapper.eq("status",status);
-            }else{
-                map.remove("status");
-            }
-
-        }
-        IPage<ChGroup> pageData = chGroupService.page(new Page<>(page,limit),wrapper);
+        LayerData<GroupVO> layerData = new LayerData<>();
+        IPage<GroupVO> pageData = chGroupService.selectGroupForPage(map,new Page(page,limit));
         layerData.setData(pageData.getRecords());
         layerData.setCount((int)pageData.getTotal());
         return layerData;
@@ -162,5 +111,22 @@ public class ChGroupController {
         chGroupService.updateById(chGroup);
         return RestResponse.success();
     }
-
+    @PostMapping("audit")
+    @ResponseBody
+    @SysLog("审核组队请求")
+    public RestResponse audit(@RequestParam(value = "id",required = false)Long id,@RequestParam(value = "status",required = false)String status){
+        if(null == id || 0 == id){
+            return RestResponse.failure("ID不能为空");
+        }
+        if(!"2".equals(status)&&!"3".equals(status)){
+            return RestResponse.failure("审核状态不正确");
+        }
+        ChGroup chGroup = chGroupService.getById(id);
+        if("2".equals(status)||"3".equals(status)){
+            return RestResponse.failure("不能重复审核");
+        }
+        chGroup.setStatus(status);
+        chGroupService.updateById(chGroup);
+        return RestResponse.success();
+    }
 }
