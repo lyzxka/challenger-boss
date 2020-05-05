@@ -31,7 +31,7 @@
     <div class="layui-inline" style="margin-left: 15px">
             <label>类别:</label>
                 <div class="layui-input-inline">
-                    <select name="s_categoryId">
+                    <select name="s_categoryId" lay-search>
                         <option value="" selected="">请选择类别</option>
                         <#list categoryList as r>
                             <option value="${r.id}" >${r.categoryName}</option>

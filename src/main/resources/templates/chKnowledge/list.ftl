@@ -16,40 +16,6 @@
     <link rel="stylesheet" href="${base}/static/layui/css/layui.css" media="all" />
     <link rel="stylesheet" href="//at.alicdn.com/t/font_tnyc012u2rlwstt9.css" media="all" />
     <link rel="stylesheet" href="${base}/static/css/user.css" media="all" />
-    <style>
-        .detail-body{
-            margin: 20px 0 0;
-            min-height: 306px;
-            line-height: 26px;
-            font-size: 16px;
-            color: #333;
-            word-wrap: break-word;
-        }
-        /* blockquote 样式 */
-        blockquote {
-            display: block;
-            border-left: 8px solid #d0e5f2;
-            padding: 5px 10px;
-            margin: 10px 0;
-            line-height: 1.4;
-            font-size: 100%;
-            background-color: #f1f1f1;
-        }
-
-        /* code 样式 */
-        code {
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
-            background-color: #f1f1f1;
-            border-radius: 3px;
-            padding: 3px 5px;
-            margin: 0 3px;
-        }
-        pre code {
-            display: block;
-        }
-    </style>
 </head>
 <body class="childrenBody">
 <fieldset class="layui-elem-field">
@@ -57,11 +23,17 @@
   <div class="layui-field-box">
     <form class="layui-form" id="searchForm">
     <div class="layui-inline" style="margin-left: 15px">
-            <label>用户:</label>
+            <label>用户名称:</label>
                 <div class="layui-input-inline">
-                <input type="text" value="" name="s_userId" placeholder="请输入用户" class="layui-input search_input">
+                <input type="text" value="" name="s_userId" placeholder="请输入用户名称" class="layui-input search_input">
                 </div>
     </div>
+        <div class="layui-inline" style="margin-left: 15px">
+            <label>用户手机号:</label>
+            <div class="layui-input-inline">
+                <input type="text" value="" name="s_userPhone" placeholder="请输入用户手机号" class="layui-input search_input">
+            </div>
+        </div>
     <div class="layui-inline" style="margin-left: 15px">
             <label>标题:</label>
                 <div class="layui-input-inline">
@@ -69,9 +41,14 @@
                 </div>
     </div>
     <div class="layui-inline" style="margin-left: 15px">
-            <label>门类:</label>
+            <label>类别:</label>
                 <div class="layui-input-inline">
-                <input type="text" value="" name="s_categoryId" placeholder="请输入门类" class="layui-input search_input">
+                    <select name="s_categoryId" lay-search>
+                        <option value="" selected="">请选择类别</option>
+                        <#list categoryList as r>
+                            <option value="${r.id}" >${r.categoryName}</option>
+                        </#list>
+                    </select>
                 </div>
     </div>
         <div class="layui-inline">
@@ -80,21 +57,14 @@
         <div class="layui-inline" >
             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
-        <div class="layui-inline">
+        <#--<div class="layui-inline">
             <a class="layui-btn layui-btn-normal" data-type="addChKnowledge">添加知识资料</a>
-        </div>
+        </div>-->
     </form>
   </div>
 </fieldset>
 <div class="layui-form users_list">
     <table class="layui-table" id="test" lay-filter="demo"></table>
-    <script type="text/html" id="content">
-    {{#  if(d.content != "" && d.content != null){ }}
-    <span><button lay-event="showcontent" class="layui-btn layui-btn-warm layui-btn-sm">显示详情</button></span>
-    {{#  } else { }}
-    <span ></span>
-    {{#  } }}
-    </script>
     <script type="text/html" id="userStatus">
         <!-- 这里的 checked 的状态只是演示 -->
         {{#  if(d.delFlag == false){ }}
@@ -105,7 +75,7 @@
     </script>
 
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+<#--        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
 </div>
@@ -159,14 +129,6 @@
                         }
                 )
             }
-            if(obj.event === "showcontent"){
-                var contentIndex = layer.open({
-                    type: 1,
-                    title: 'content预览',
-                    content: '<div class="detail-body" style="margin:20px;">'+data.content+'</div>'
-                });
-                layer.full(contentIndex);
-            }
         });
 
         var t = {
@@ -184,10 +146,11 @@
             cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             cols: [[
                 {type:'checkbox'},
-                {field:'userId', title: '用户'},
+                {field:'userName', title: '用户名称'},
+                {field:'userPhone', title: '用户手机号'},
                 {field:'title', title: '标题'},
-                {field:'content', title: '内容',templet:'#content'},
-                {field:'categoryId', title: '门类'},
+                {field:'content', title: '内容'},
+                {field:'categoryName', title: '门类'},
                 {field:'delFlag',    title: '知识资料状态',width:'12%',templet:'#userStatus'},
                 {field:'createDate',  title: '创建时间',width:'15%',templet:'<div>{{ layui.laytpl.toDateString(d.createDate) }}</div>',unresize: true}, //单元格内容水平居中
                 {fixed: 'right', title:'操作',  width: '15%', align: 'center',toolbar: '#barDemo'}

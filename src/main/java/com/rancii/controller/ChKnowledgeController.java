@@ -1,5 +1,9 @@
 package com.rancii.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.rancii.entity.ChCategory;
+import com.rancii.entity.VO.KnowledgeVO;
+import com.rancii.service.ChCategoryService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,47 +47,25 @@ public class ChKnowledgeController {
 
     @Autowired
     private ChKnowledgeService chKnowledgeService;
+    @Autowired
+    private ChCategoryService categoryService;
 
     @GetMapping("list")
     @SysLog("跳转知识资料列表")
-    public String list(){
+    public String list(Model model){
+        model.addAttribute("categoryList",categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false)));
         return "/chKnowledge/list";
     }
 
     @PostMapping("list")
     @ResponseBody
     @SysLog("请求知识资料列表数据")
-    public LayerData<ChKnowledge> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
+    public LayerData<KnowledgeVO> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
                                       @RequestParam(value = "limit",defaultValue = "10")Integer limit,
                                       ServletRequest request){
         Map map = WebUtils.getParametersStartingWith(request, "s_");
-        LayerData<ChKnowledge> layerData = new LayerData<>();
-        QueryWrapper<ChKnowledge> wrapper = new QueryWrapper<>();
-        wrapper.eq("del_flag",false);
-        if(!map.isEmpty()){
-            String userId = (String) map.get("userId");
-            if(StringUtils.isNotBlank(userId)) {
-                wrapper.like("user_id",userId);
-            }else{
-                map.remove("userId");
-            }
-
-            String title = (String) map.get("title");
-            if(StringUtils.isNotBlank(title)) {
-                wrapper.like("title",title);
-            }else{
-                map.remove("title");
-            }
-
-            String categoryId = (String) map.get("categoryId");
-            if(StringUtils.isNotBlank(categoryId)) {
-                wrapper.like("category_id",categoryId);
-            }else{
-                map.remove("categoryId");
-            }
-
-        }
-        IPage<ChKnowledge> pageData = chKnowledgeService.page(new Page<>(page,limit),wrapper);
+        LayerData<KnowledgeVO> layerData = new LayerData<>();
+        IPage<KnowledgeVO> pageData = chKnowledgeService.selectKnowledgeForPage(map,new Page<>(page,limit));
         layerData.setData(pageData.getRecords());
         layerData.setCount((int)pageData.getTotal());
         return layerData;
@@ -91,7 +73,8 @@ public class ChKnowledgeController {
 
     @GetMapping("add")
     @SysLog("跳转新增知识资料页面")
-    public String add(){
+    public String add(Model model){
+        model.addAttribute("categoryList",categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false)));
         return "/chKnowledge/add";
     }
 
@@ -106,6 +89,7 @@ public class ChKnowledgeController {
     @GetMapping("edit")
     @SysLog("跳转编辑知识资料页面")
     public String edit(Long id,Model model){
+        model.addAttribute("categoryList",categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false)));
         ChKnowledge chKnowledge = chKnowledgeService.getById(id);
         model.addAttribute("chKnowledge",chKnowledge);
         return "/chKnowledge/edit";

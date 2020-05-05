@@ -40,9 +40,9 @@
         <div class="layui-inline" >
             <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
-        <div class="layui-inline">
+        <#--<div class="layui-inline">
             <a class="layui-btn layui-btn-normal" data-type="addChUser">添加用户表</a>
-        </div>
+        </div>-->
     </form>
   </div>
 </fieldset>
@@ -65,7 +65,7 @@
     </script>
 
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+<#--        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
 </div>
@@ -146,8 +146,8 @@
                 {field:'email', title: '邮箱'},
                 {field:'name', title: '昵称'},
                 {field:'icon', title: '头像',templet:'#icon'},
-                {field:'password', title: '密码'},
-                {field:'salt', title: '加密盐'},
+                // {field:'password', title: '密码'},
+                // {field:'salt', title: '加密盐'},
                 {field:'delFlag',    title: '用户表状态',width:'12%',templet:'#userStatus'},
                 {field:'createDate',  title: '创建时间',width:'15%',templet:'<div>{{ layui.laytpl.toDateString(d.createDate) }}</div>',unresize: true}, //单元格内容水平居中
                 {fixed: 'right', title:'操作',  width: '15%', align: 'center',toolbar: '#barDemo'}

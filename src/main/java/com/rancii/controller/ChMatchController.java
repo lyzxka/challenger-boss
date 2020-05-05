@@ -1,5 +1,9 @@
 package com.rancii.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.rancii.entity.ChCategory;
+import com.rancii.entity.VO.MatchVO;
+import com.rancii.service.ChCategoryService;
 import com.xiaoleilu.hutool.date.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,84 +47,25 @@ public class ChMatchController {
 
     @Autowired
     private ChMatchService chMatchService;
+    @Autowired
+    private ChCategoryService categoryService;
 
     @GetMapping("list")
     @SysLog("跳转比赛列表")
-    public String list(){
+    public String list(Model model){
+        model.addAttribute("categoryList",categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false)));
         return "/chMatch/list";
     }
 
     @PostMapping("list")
     @ResponseBody
     @SysLog("请求比赛列表数据")
-    public LayerData<ChMatch> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
+    public LayerData<MatchVO> list(@RequestParam(value = "page",defaultValue = "1")Integer page,
                                       @RequestParam(value = "limit",defaultValue = "10")Integer limit,
                                       ServletRequest request){
         Map map = WebUtils.getParametersStartingWith(request, "s_");
-        LayerData<ChMatch> layerData = new LayerData<>();
-        QueryWrapper<ChMatch> wrapper = new QueryWrapper<>();
-        wrapper.eq("del_flag",false);
-        if(!map.isEmpty()){
-            String title = (String) map.get("title");
-            if(StringUtils.isNotBlank(title)) {
-                wrapper.like("title",title);
-            }else{
-                map.remove("title");
-            }
-
-            String matchNo = (String) map.get("matchNo");
-            if(StringUtils.isNotBlank(matchNo)) {
-                wrapper.like("match_no",matchNo);
-            }else{
-                map.remove("matchNo");
-            }
-
-            String categoryId = (String) map.get("categoryId");
-            if(StringUtils.isNotBlank(categoryId)) {
-                wrapper.like("category_id",categoryId);
-            }else{
-                map.remove("categoryId");
-            }
-
-            String views = (String) map.get("views");
-            if(StringUtils.isNotBlank(views)) {
-                wrapper.like("views",views);
-            }else{
-                map.remove("views");
-            }
-
-            String beginBeginDate = (String) map.get("beginBeginDate");
-            String endBeginDate = (String) map.get("endBeginDate");
-            if(StringUtils.isNotBlank(beginBeginDate)) {
-                Date begin = DateUtil.parse(beginBeginDate);
-                wrapper.ge("begin_date",begin);
-            }else{
-                map.remove("beginBeginDate");
-            }
-            if(StringUtils.isNotBlank(endBeginDate)) {
-                Date end = DateUtil.parse(endBeginDate);
-                wrapper.le("begin_date",end);
-            }else{
-                map.remove("endBeginDate");
-            }
-
-            String beginEndDate = (String) map.get("beginEndDate");
-            String endEndDate = (String) map.get("endEndDate");
-            if(StringUtils.isNotBlank(beginEndDate)) {
-                Date begin = DateUtil.parse(beginEndDate);
-                wrapper.ge("end_date",begin);
-            }else{
-                map.remove("beginEndDate");
-            }
-            if(StringUtils.isNotBlank(endEndDate)) {
-                Date end = DateUtil.parse(endEndDate);
-                wrapper.le("end_date",end);
-            }else{
-                map.remove("endEndDate");
-            }
-
-        }
-        IPage<ChMatch> pageData = chMatchService.page(new Page<>(page,limit),wrapper);
+        LayerData<MatchVO> layerData = new LayerData<>();
+        IPage<MatchVO> pageData = chMatchService.selectMatchForPage(map,new Page<>(page,limit));
         layerData.setData(pageData.getRecords());
         layerData.setCount((int)pageData.getTotal());
         return layerData;
@@ -128,7 +73,8 @@ public class ChMatchController {
 
     @GetMapping("add")
     @SysLog("跳转新增比赛页面")
-    public String add(){
+    public String add(Model model){
+        model.addAttribute("categoryList",categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false)));
         return "/chMatch/add";
     }
 
@@ -143,6 +89,7 @@ public class ChMatchController {
     @GetMapping("edit")
     @SysLog("跳转编辑比赛页面")
     public String edit(Long id,Model model){
+        model.addAttribute("categoryList",categoryService.list(new LambdaQueryWrapper<ChCategory>().select(ChCategory::getCategoryName,ChCategory::getId).eq(ChCategory::getDelFlag,false)));
         ChMatch chMatch = chMatchService.getById(id);
         model.addAttribute("chMatch",chMatch);
         return "/chMatch/edit";

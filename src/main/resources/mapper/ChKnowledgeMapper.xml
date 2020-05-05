@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.rancii.dao.ChGroupDao" >
-
+<mapper namespace="com.rancii.dao.ChKnowledgeDao" >
+    <select id="selectKnowledgeForPage" parameterType="java.util.Map" resultType="com.rancii.entity.VO.KnowledgeVO">
+        select
+            k.*,
+            u.name as userName,
+            u.phone as userPhone,
+            c.category_name as categoryName
+        from ch_knowledge as k
+        left join ch_user as u on u.id=k.user_id
+        left  join ch_category as c on c.id =k.category_id
+        where k.del_flag =0
+        <if test="param.userName != null and param.userName !=''">
+            and u.name like concat('%',#{param.userName},'%')
+        </if>
+        <if test="param.userPhone != null and param.userPhone !=''">
+            and u.phone =#{param.phone}
+        </if>
+        <if test="param.title != null and param.title !=''">
+            and k.title like concat('%',#{param.title},'%')
+        </if>
+        <if test="param.categoryId != null and param.categoryId !=''">
+            and c.id=#{param.categoryId}
+        </if>
+        order by k.create_date
+    </select>
 </mapper>

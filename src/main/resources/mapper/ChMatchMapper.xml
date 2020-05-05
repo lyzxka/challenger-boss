@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rancii.dao.ChMatchDao" >
+    <select id="selectMatchForPage" parameterType="java.util.Map" resultType="com.rancii.entity.VO.MatchVO">
+        select
+        m.*,
+        c.category_name as categoryName
+        from ch_match as m
+        left  join ch_category as c on c.id =m.category_id
+        where m.del_flag =0
+        <if test="param.matchNo != null and param.matchNo !=''">
+            and m.match_no =#{param.matchNo}
+        </if>
+        <if test="param.title != null and param.title !=''">
+            and m.title like concat('%',#{param.title},'%')
+        </if>
+        <if test="param.categoryId != null and param.categoryId !=''">
+            and c.id=#{param.categoryId}
+        </if>
+        <if test="param.endBeginDate != null and param.endBeginDate != ''">
+            and date_format(m.begin_date,'%Y-%m-%d') <![CDATA[ <=  ]]> #{param.}
+        </if>
+        <if test="param.beginBeginDate != null and param.beginBeginDate != ''">
+           and date_format(m.begin_date,'%Y-%m-%d') >= #{param.}
+        </if>
+        <if test="param.endEndDate != null and param.endEndDate != ''">
+            and date_format( m.end_date,'%Y-%m-%d') <![CDATA[ <=  ]]> #{param.endEndDate}
+        </if>
+        <if test="param.beginEndDate != null and param.beginEndDate != ''">
+            and date_format(m.end_date,'%Y-%m-%d') >= #{param.beginEndDate}
+        </if>
+        order by m.create_date
+    </select>
+</mapper>

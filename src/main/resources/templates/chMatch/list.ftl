@@ -16,40 +16,6 @@
     <link rel="stylesheet" href="${base}/static/layui/css/layui.css" media="all" />
     <link rel="stylesheet" href="//at.alicdn.com/t/font_tnyc012u2rlwstt9.css" media="all" />
     <link rel="stylesheet" href="${base}/static/css/user.css" media="all" />
-    <style>
-        .detail-body{
-            margin: 20px 0 0;
-            min-height: 306px;
-            line-height: 26px;
-            font-size: 16px;
-            color: #333;
-            word-wrap: break-word;
-        }
-        /* blockquote 样式 */
-        blockquote {
-            display: block;
-            border-left: 8px solid #d0e5f2;
-            padding: 5px 10px;
-            margin: 10px 0;
-            line-height: 1.4;
-            font-size: 100%;
-            background-color: #f1f1f1;
-        }
-
-        /* code 样式 */
-        code {
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
-            background-color: #f1f1f1;
-            border-radius: 3px;
-            padding: 3px 5px;
-            margin: 0 3px;
-        }
-        pre code {
-            display: block;
-        }
-    </style>
 </head>
 <body class="childrenBody">
 <fieldset class="layui-elem-field">
@@ -69,35 +35,34 @@
                 </div>
     </div>
     <div class="layui-inline" style="margin-left: 15px">
-            <label>门类:</label>
-                <div class="layui-input-inline">
-                <input type="text" value="" name="s_categoryId" placeholder="请输入门类" class="layui-input search_input">
-                </div>
-    </div>
-    <div class="layui-inline" style="margin-left: 15px">
-            <label>浏览量:</label>
-                <div class="layui-input-inline">
-                <input type="text" value="" name="s_views" placeholder="请输入浏览量" class="layui-input search_input">
-                </div>
+        <label>门类:</label>
+        <div class="layui-input-inline">
+            <select name="s_categoryId" lay-search>
+                <option value="" selected="">请选择类别</option>
+                <#list categoryList as r>
+                    <option value="${r.id}" >${r.categoryName}</option>
+                </#list>
+            </select>
+        </div>
     </div>
     <div class="layui-inline" style="margin-left: 15px">
             <label>开始时间:</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="s_beginBeginDate" id="beginBeginDate" lay-verify="date"  autocomplete="off" class="layui-input">
+                    <input type="text" name="s_beginBeginDate" id="beginBeginDate"   autocomplete="off" class="layui-input">
                 </div>
                 <span>-</span>
                 <div class="layui-input-inline">
-                    <input type="text" name="s_endBeginDate" id="endBeginDate" lay-verify="date"  autocomplete="off" class="layui-input">
+                    <input type="text" name="s_endBeginDate" id="endBeginDate" autocomplete="off" class="layui-input">
                 </div>
     </div>
     <div class="layui-inline" style="margin-left: 15px">
             <label>截止时间:</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="s_beginEndDate" id="beginEndDate" lay-verify="date"  autocomplete="off" class="layui-input">
+                    <input type="text" name="s_beginEndDate" id="beginEndDate"   autocomplete="off" class="layui-input">
                 </div>
                 <span>-</span>
                 <div class="layui-input-inline">
-                    <input type="text" name="s_endEndDate" id="endEndDate" lay-verify="date"  autocomplete="off" class="layui-input">
+                    <input type="text" name="s_endEndDate" id="endEndDate" autocomplete="off" class="layui-input">
                 </div>
     </div>
         <div class="layui-inline">
@@ -117,13 +82,6 @@
     <script type="text/html" id="imgUrl">
     {{#  if(d.imgUrl != "" && d.imgUrl != null){ }}
     <span id="imgUrl_{{d.id}}" ><img lay-event="imageimgUrl" layer-pid="{{d.id}}" layer-src="{{d.imgUrl}}" src="{{d.imgUrl}}" style="width: 40px;"/></span>
-    {{#  } else { }}
-    <span ></span>
-    {{#  } }}
-    </script>
-    <script type="text/html" id="content">
-    {{#  if(d.content != "" && d.content != null){ }}
-    <span><button lay-event="showcontent" class="layui-btn layui-btn-warm layui-btn-sm">显示详情</button></span>
     {{#  } else { }}
     <span ></span>
     {{#  } }}
@@ -258,14 +216,6 @@
                     anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
                 });
             }
-            if(obj.event === "showcontent"){
-                var contentIndex = layer.open({
-                    type: 1,
-                    title: 'content预览',
-                    content: '<div class="detail-body" style="margin:20px;">'+data.content+'</div>'
-                });
-                layer.full(contentIndex);
-            }
         });
 
         var t = {
@@ -286,8 +236,8 @@
                 {field:'title', title: '标题'},
                 {field:'matchNo', title: '比赛编号'},
                 {field:'imgUrl', title: '主图',templet:'#imgUrl'},
-                {field:'content', title: '内容',templet:'#content'},
-                {field:'categoryId', title: '门类'},
+                {field:'content', title: '内容'},
+                {field:'categoryName', title: '门类'},
                 {field:'views', title: '浏览量'},
                 {field:'beginDate',  title: '开始时间',templet:'<div>{{ layui.laytpl.toDateString(d.beginDate,"yyyy-MM-dd") }}</div>',unresize: true},
                 {field:'endDate',  title: '截止时间',templet:'<div>{{ layui.laytpl.toDateString(d.endDate,"yyyy-MM-dd") }}</div>',unresize: true},
